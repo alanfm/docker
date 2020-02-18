@@ -60,46 +60,46 @@ Docker utilizando o compose, arquivo de configuração com variáveis de ambient
 
 1. Clone o repositório usando o comando:
 
-   git clone https://github.com/danielnogueira-dev/Docker-Compose-Nginx-Php-Mysql
+   git clone https://github.com/alanfm/docker.git
 
-2. Entre na pasta Docker-Compose-Nginx-Php-Mysql e copie o arquivo env-example para .env.
+2. Entre na pasta ```docker``` e copie o arquivo ```example.env``` para ```.env```.
 
-   cp env-example .env
+   ```$ cp example.env .env```
 
 3. Rode seu container:
 
-   docker-compose up -d
+   ```$ docker-compose up -d```
 
 4. Adicione os domínios no arquivo de hosts do windows.
 
    127.0.0.1 localhost
 
-   127.0.0.1 api.dev
+   127.0.0.1 api.local
 
 5. Abra no navegador
 
-   http://localhost
+   http://localhost/
 
-   http://api.dev
+   http://api.local/
 
 6. Acessar o shell do container:
     
-	winpty docker exec -it nginx bash
+	```$ docker exec -it nginx bash```
 
-	winpty docker exec -it php-fpm bash
+	```$ docker exec -it php-fpm bash```
 	
-	winpty docker exec -it mysql bash
+	```$ docker exec -it mysql bash```
 
 7. Acessar o banco de dados dentro do container Mysql
 
-	mysql -u root -p
+	```mysql -u root -p```
 
 8. Comandos básicos para utilizar o banco de dados
 
-	show databases;
+	```show databases;```
 
-	CREATE DATABASE teste;
+	```CREATE DATABASE teste;```
 	
-	use teste;
+	```use teste;```
 	
-	show tables;
+	```show tables;```
