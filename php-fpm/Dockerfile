@@ -47,8 +47,9 @@ RUN if [ ${INSTALL_GD} = true ]; then \
 ARG INSTALL_COMPRESSION=false
 RUN if [ ${INSTALL_COMPRESSION} = true ]; then \
     # Install zip, bz2 and requirements
-    apt-get install -y --no-install-recommends libbz2-dev zlib1g-dev libzip-dev \
- && docker-php-ext-install zip \
+    apt-get install -y --no-install-recommends libbz2-dev zlib1g-dev libzip-dev unzip zip \
+    #&& docker-php-ext-configure zip --with-libzip \
+    && docker-php-ext-install zip \
     bz2 \
 ;fi
 
@@ -217,7 +218,7 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # Permissions
 RUN chown -R root:www-data /var/www/html
-RUN chmod u+rwx,g+rx,o+rx /var/www/html
+RUN chmod u+rwx,g+rwx,o+rx /var/www/html
 RUN find /var/www/html -type d -exec chmod u+rwx,g+rx,o+rx {} +
 RUN find /var/www/html -type f -exec chmod u+rw,g+rw,o+r {} +
 
