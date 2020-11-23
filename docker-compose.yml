@@ -64,6 +64,7 @@ services:
             - MYSQL_USER=${MYSQL_USER}
             - MYSQL_PASSWORD=${MYSQL_PASSWORD}
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - TZ=${MYSQL_TIMEZONE}
         networks:
             - code-network
 
@@ -74,7 +75,7 @@ services:
         ports: 
             - ${POSTGRES_PORT}:5432
         volumes: 
-            - ${POSTGRES_DATA}:/var/lib/postgres/data
+            - ${POSTGRES_DATA}:/var/lib/postgresql/data/pgdata
         environment: 
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

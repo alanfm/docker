@@ -221,6 +221,7 @@ RUN chown -R root:www-data /var/www/html
 RUN chmod u+rwx,g+rwx,o+rx /var/www/html
 RUN find /var/www/html -type d -exec chmod u+rwx,g+rx,o+rx {} +
 RUN find /var/www/html -type f -exec chmod u+rw,g+rw,o+r {} +
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 CMD ["php-fpm"]
 
