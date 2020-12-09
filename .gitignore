@@ -11,8 +11,9 @@ htdocs/api.dev/public/*
 !htdocs/index.php
 !htdocs/api.dev/public/index.php
 
-# ignora tudo no diretório "mysql/data"
-mysql/data/
+# ignora tudo no diretório "volumes/mysql" e "volumes/postgres"
+volumes/mysql/*
+volumes/postgres/*
 
 # ignora tudo no diretório "nginx/logs"
 nginx/logs/

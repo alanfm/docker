@@ -1,4 +1,4 @@
-FROM php:fpm
+FROM php:7.4-fpm
 
 # Additional tools
 RUN apt-get update \
@@ -72,7 +72,7 @@ ARG INSTALL_MCRYPT=false
 RUN if [ ${INSTALL_MCRYPT} = true ]; then \
     # Install mcrypt and requirements
     apt-get install -y --no-install-recommends libmcrypt-dev \
- && pecl install mcrypt-1.0.3 \
+    && pecl install mcrypt-1.0.3 \
 ;fi
 
 #####################################
