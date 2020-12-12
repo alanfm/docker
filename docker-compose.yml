@@ -59,7 +59,7 @@ services:
         ports:
             - "${MYSQL_PORT}:3306"
         volumes:
-            - data-mysql:/var/lib/mysql
+            - data-db-mysql:/var/lib/mysql
         environment:
             - MYSQL_DATABASE=${MYSQL_DATABASE}
             - MYSQL_USER=${MYSQL_USER}
@@ -76,7 +76,7 @@ services:
         ports: 
             - ${POSTGRES_PORT}:5432
         volumes: 
-            - data-postgres:/var/lib/postgresql/data/
+            - data-pgsql:/var/lib/postgresql/data/
         environment: 
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -108,21 +108,22 @@ services:
         networks:
             - code-network
 
+    mailhog:
+        container_name: mailhog
+        image: 'mailhog/mailhog:latest'
+        ports:
+            - 1025:1025
+            - 8025:8025
+        networks:
+            - code-network
+
 networks:
     code-network:
         driver: bridge
 
 volumes: 
-    data-postgres:
+    data-pgsql:
         driver: local
-        driver_opts: 
-            type: 'none'
-            o: 'bind'
-            device: './volumes/postgres'
 
-    data-mysql:
+    data-db-mysql:
         driver: local
-        driver_opts: 
-            type: 'none'
-            o: 'bind'
-            device: './volumes/mysql'
