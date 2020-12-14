@@ -110,10 +110,11 @@ services:
 
     mailhog:
         container_name: mailhog
+        restart: always
         image: 'mailhog/mailhog:latest'
         ports:
-            - 1025:1025
-            - 8025:8025
+            - ${MAILHOG_BOX_POST}:8025
+            - ${MAILHOG_MAIL_PORT}:1025
         networks:
             - code-network
 
