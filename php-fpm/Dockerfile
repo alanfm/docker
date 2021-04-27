@@ -1,15 +1,16 @@
-FROM php:7.4-fpm
+FROM php:8.0-fpm
 
 # Additional tools
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+RUN apt update \
+ && apt install -y --no-install-recommends \
     curl \
     openssl \
     libssl-dev \
-    nano
+    nano \
+    cron
 
 # Common php-ext and requirements
-RUN apt-get install -y --no-install-recommends libpq-dev libz-dev \
+RUN apt install -y --no-install-recommends libpq-dev libz-dev \
  && docker-php-ext-install pcntl \
  && docker-php-ext-install session \
  && docker-php-ext-install phar \
@@ -33,7 +34,7 @@ RUN apt-get install -y --no-install-recommends libpq-dev libz-dev \
 ARG INSTALL_GD=false
 RUN if [ ${INSTALL_GD} = true ]; then \
     # Install gd and requirements
-    apt-get install -y --no-install-recommends libjpeg-dev libpng-dev libfreetype6-dev libjpeg62-turbo-dev libxpm-dev libwebp-dev \
+    apt install -y --no-install-recommends libjpeg-dev libpng-dev libfreetype6-dev libjpeg62-turbo-dev libxpm-dev libwebp-dev \
  && docker-php-ext-configure gd \
     --with-jpeg=/usr/include \
     --with-freetype=/usr/include \
@@ -47,7 +48,7 @@ RUN if [ ${INSTALL_GD} = true ]; then \
 ARG INSTALL_COMPRESSION=false
 RUN if [ ${INSTALL_COMPRESSION} = true ]; then \
     # Install zip, bz2 and requirements
-    apt-get install -y --no-install-recommends libbz2-dev zlib1g-dev libzip-dev unzip zip \
+    apt install -y --no-install-recommends libbz2-dev zlib1g-dev libzip-dev unzip zip \
     #&& docker-php-ext-configure zip --with-libzip \
     && docker-php-ext-install zip \
     bz2 \
@@ -60,7 +61,7 @@ RUN if [ ${INSTALL_COMPRESSION} = true ]; then \
 ARG INSTALL_FTP=false
 RUN if [ ${INSTALL_FTP} = true ]; then \
     # Install ftp and requirements
-    apt-get install -y --no-install-recommends libssl-dev \
+    apt install -y --no-install-recommends libssl-dev \
  && docker-php-ext-install ftp \
 ;fi
 
@@ -71,8 +72,8 @@ RUN if [ ${INSTALL_FTP} = true ]; then \
 ARG INSTALL_MCRYPT=false
 RUN if [ ${INSTALL_MCRYPT} = true ]; then \
     # Install mcrypt and requirements
-    apt-get install -y --no-install-recommends libmcrypt-dev \
-    && pecl install mcrypt-1.0.3 \
+    apt install -y --no-install-recommends libmcrypt-dev \
+    && pecl install mcrypt-1.0.4 \
 ;fi
 
 #####################################
@@ -82,7 +83,7 @@ RUN if [ ${INSTALL_MCRYPT} = true ]; then \
 ARG INSTALL_MBSTRING=false
 RUN if [ ${INSTALL_MBSTRING} = true ]; then \
     # Install mbstring
-    apt-get install -y --no-install-recommends libonig-dev \
+    apt install -y --no-install-recommends libonig-dev \
     && docker-php-ext-install mbstring \
 ;fi
 
@@ -145,8 +146,12 @@ COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 ARG INSTALL_XDEBUG=false
 RUN if [ ${INSTALL_XDEBUG} = true ]; then \
     # Install the xdebug
-    pecl install xdebug \
-    docker-php-ext-enable xdebug \
+    # pecl install xdebug \
+    # docker-php-ext-enable xdebug \
+    yes | pecl install xdebug \
+    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
 ;fi
 
 # Copy xdebug configration
@@ -179,27 +184,28 @@ RUN if [ ${INSTALL_TOKENIZER} = true ]; then \
 # json, xml, dom xmlrpc, xsl:
 #####################################
 
-ARG INSTALL_JSON_XML=false
-RUN if [ ${INSTALL_JSON_XML} = true ]; then \
+ARG INSTALL_XML=false
+RUN if [ ${INSTALL_XML} = true ]; then \
     # Install xml, dom xmlrpc, xsl, and requirements
-    apt-get install -y --no-install-recommends libxml2-dev libxslt-dev \
- && docker-php-ext-install json \
-    xml \
-    dom \
-    xmlrpc \
-    xsl \
+    apt install -y --no-install-recommends libxml2-dev libxslt-dev \
+    && docker-php-ext-install simplexml \
+    && docker-php-ext-install xml \
+    && docker-php-ext-install dom \
+    && docker-php-ext-install xmlwriter \
+    && docker-php-ext-install xsl \
+    # simplexml libxml xml dom xmlrpc xmlwriter xsl xmlreader \
 ;fi
 
 #####################################
 # curl:
 #####################################
 
-#ARG INSTALL_CURL=false
-#RUN if [ ${INSTALL_CURL} = true ]; then \
-#    # Install curl and requirements
-#    apt-get install -y --no-install-recommends libcurl3 libcurl3-dev \
-#    docker-php-ext-install curl \
-#;fi
+ARG INSTALL_CURL=false
+RUN if [ ${INSTALL_CURL} = true ]; then \
+    # Install curl and requirements
+    apt install -y --no-install-recommends libcurl4 libcurl3-dev curl \
+    && docker-php-ext-install curl \
+;fi
 
 #####################################
 # Human Language and Character Encoding Support:
@@ -208,9 +214,9 @@ RUN if [ ${INSTALL_JSON_XML} = true ]; then \
 ARG INSTALL_INTL=false
 RUN if [ ${INSTALL_INTL} = true ]; then \
     # Install intl and requirements
-    apt-get install -y --no-install-recommends zlib1g-dev libicu-dev g++ \
- && docker-php-ext-configure intl \
- && docker-php-ext-install intl \
+    apt install -y --no-install-recommends zlib1g-dev libicu-dev g++ \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
 ;fi
 
 # Clear package lists
